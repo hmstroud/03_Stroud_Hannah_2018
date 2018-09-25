@@ -1,0 +1,184 @@
+---
+title: "03_Stroud_Hannah_2018"
+author: "Hannah Stroud"
+date: "September 22, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Homework 3 Data Visualization 
+```{r}
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(forcats) 
+library(ggthemes)
+library(gganimate)
+
+
+```
+
+### 1. Complete problems 10 and 17-18 on pg. 109-111. Use R where possible
+
+W&S  
+Q 10- Use approximate methods to provide a CI for population mean
+
+```{r}
+gene_data <- read_csv("./Data/04q11NumberGenesRegulated.csv")
+```
+####W&S Q 17- Explaining a CI Interval  
+
+
+###W&S  Q 18  
+```{r}
+beetles_per_night <- c(51, 45, 61, 76, 11, 117, 7, 132, 52, 149)
+```
+#### 18a. what is the mean and standard deviation of beetles per flower
+
+```{r}
+beetles_mean <- mean(beetles_per_night)
+beetles_mean
+
+beetles_std <- sd(beetles_per_night)
+beetles_std
+```
+
+####18b. What is the standard error of the estimate of the mean?
+```{r}
+std_err_beetles <- beetles_std/sqrt(length(beetles_per_night))
+std_err_beetles
+```
+
+####18c. Give approx. 95% CI of the mean, provide lower and upper limits
+```{r}
+#CI= 2*std_err
+Conf_Inter <- 2*std_err_beetles
+Conf_Inter
+
+Lower_CI <- beetles_mean -(2*Conf_Inter)
+Upper_CI <- beetles_mean + (2*Conf_Inter)
+Lower_CI
+Upper_CI
+```
+
+####18d. If given 25 data points I'd expect the mean to be similar- mean is a population parameter and should remain the similar while parameters that measure precision will vary with varying sample sizes. 
+
+####18e. If given 25 data points I'd expect the standard deviation to be similar as well, since it is a measurement of population, not precision, which more data points would change. 
+
+####18f. If given a 25 data points, I'd expect the standard error to be smaller, since it is a measure of precision 
+
+###Question 2
+
+####2.1 
+```{r}
+#Load Data
+Sea_Ice<-read_csv("./Data/NH_seaice_extent_monthly_1978_2016.csv")
+#make Month_Names factor
+Sea_Ice <- Sea_Ice %>% 
+  mutate(Month_Name= factor(Month_Name)) %>%
+  mutate(Month_Name= fct_inorder(Month_Name))#orders by first appearance
+#use levels to check order 
+levels(Sea_Ice$Month_Name)
+```
+The Months are in the order they appeared, which is not right or helpful to us. 
+
+####2.2 Trying other ways to order factor 
+What is the order of factor levels that results? Try out fct_relevel(), and last, fct_recode() as well. Look at the help files to learn more, and in particular try out the examples. Use these to guide how you try each functino out. After trying each of these, mutate month name to get the months in the right order, from January to December. Show that it worked with levels()
+```{r}
+#Try fct_rev()
+?fct_rev  #just reverses factor order
+
+fct_rev(Sea_Ice$Month_Name)
+```
+fct_rev puts them in the reverse order of which they appear in the data
+
+```{r}
+
+#fct_relevel: manually go in and move individual or multiple factors to specific orders  
+f_ex1 <- fct_relevel(Sea_Ice$Month_Name, "Dec","Jan")
+levels(f_ex1)
+
+#you can go in and change factors by hand, does more than rearrange order- can change the level, ie grouping all fruit into one level, or just renaming them 
+x_recode <- fct_recode(Sea_Ice$Month_Name, Month = "Jan", Month = "Feb")
+levels(x_recode)
+
+Sea_Ice <- Sea_Ice %>%
+  mutate(Month_Name= fct_relevel(Month_Name, "Jan", "Feb","Mar", "Apr","May","Jun", "Jul","Aug","Sep", "Oct", after= 0L))
+levels(Sea_Ice$Month_Name)
+
+```
+
+####2.3 Making a new column of factors: Seasons
+
+```{r}
+Sea_Ice <- Sea_Ice %>%
+  mutate(Season= Month_Name)%>%
+  mutate(Season= fct_recode(Season, Winter= "Dec", Winter= "Jan", Winter= "Feb",
+                             Spring= "Mar", Spring= "Apr", Spring= "May",
+                             Summer= "Jun", Summer= "Jul", Summer= "Aug",
+                             Fall= "Sep", Fall= "Oct", Fall= "Nov"))
+levels(Sea_Ice$Season)
+```
+
+####2.4 Make a boxplot showing the variability in sea ice extent every month
+
+```{r}
+Ice_Extent <- ggplot(data= Sea_Ice, mapping= aes(x= Month_Name, y= Extent))
+
+Ice_Extent + geom_boxplot()
+```
+
+
+#### 2.4 b. Use dplyr to get the annual minimum sea ice extent. Plot minimum ice by year, and add a trendline (either a smooth spline or a straight line).
+
+```{r}
+Sea_Ice_sum <- Sea_Ice %>% 
+  group_by(Year) %>%
+  summarize(min_ext= min(Extent))
+
+ggplot(data=Sea_Ice_sum, mapping = aes(x= Year, y= min_ext)) + geom_point()+  stat_smooth(method = "lm")
+  
+```
+
+#### 2.5 With the original data, plot sea ice by year, with different lines for different months. Then, use facet_wrap and cut_interval(Month, n=4) to split the plot into seasons.
+
+```{r}
+Ice_month <- ggplot(data= Sea_Ice, mapping= aes(x= Year, y= Extent, 
+                                                  group= Month, color= Month)) 
+
+
+Ice_month + geom_line() + scale_color_gradientn(colors= rainbow(12))+  facet_wrap(~Season) 
+
+```
+
+#### 2.6 Last, make a line plot of sea ice by month with different lines as different years. Gussy it up with colors by year, a different theme, and whatever other annotations, changes to axes, etc., you think best show the story of this data. For ideas, see the lab.
+
+```{r}
+library(viridis)
+
+Ice_year <- ggplot(data= Sea_Ice, mapping= aes( x= Month_Name, y= Extent, 
+                                                group= Year, color= Year))+
+  geom_line()  +
+  scale_color_viridis(option= "D") +
+  scale_x_discrete(expand=c(0,0)) +
+  ggtitle("Ice Extent 1980-2010") +
+  theme_bw()
+
+```
+
+#### 2.7 Extra Credit) Make it animated with gganimate. Just like above. See the lab for more.
+
+```{r}
+#starting with 2.6
+#Ice_year + 
+  #error: Error in seq.default(range[1], range[2], length.out = nframes) : 'from' must be a finite number  
+  
+
+```
+
+#### 2.8 Extra Credit) Use the data and make something wholly new and awesome. Even extra extra credit for something amazing animated.
+
+#### 3 Extra Credit) Go to the internet, and find a package with some cool theme you want to use in ggplot2. Use it with one of the above plots. The cooler the theme, the more points we’ll give! Note - this guy - http://byrneslab.net/project/hensel/ - is in charge of deciding how cool it is.
