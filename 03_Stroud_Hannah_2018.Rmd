@@ -102,7 +102,7 @@ The Months are in the order they appeared, which is not right or helpful to us.
 What is the order of factor levels that results? Try out fct_relevel(), and last, fct_recode() as well. Look at the help files to learn more, and in particular try out the examples. Use these to guide how you try each functino out. After trying each of these, mutate month name to get the months in the right order, from January to December. Show that it worked with levels()
 ```{r}
 #Try fct_rev()
-?fct_rev  #just reverses factor order
+#just reverses factor order
 
 fct_rev(Sea_Ice$Month_Name)
 ```
@@ -179,20 +179,18 @@ Ice_year <- ggplot(data= Sea_Ice, mapping= aes( x= Month_Name, y= Extent,
   scale_x_discrete(expand=c(0,0)) +
   ggtitle("Ice Extent 1980-2010") +
   theme_bw()
-
+Ice_year
 ```
 
 #### 2.7 Extra Credit) Make it animated with gganimate. Just like above. See the lab for more.
 
 ```{r}
 #starting with 2.6
-Ice_1 <-Ice_year + 
+Ice_year + 
   transition_states(
     Year,
     transition_length = 29,
     state_length = 1) 
-
-  
 
 ```
 
