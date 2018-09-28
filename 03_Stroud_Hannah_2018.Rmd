@@ -189,11 +189,10 @@ Ice_year
 Ice_year + 
   transition_states(
     Year,
-    transition_length = 29,
-    state_length = 1) 
+    transition_length = 2,
+    state_length = 1) +
+  transition_reveal(Year, along= Year)
 
 ```
 
 #### 2.8 Extra Credit) Use the data and make something wholly new and awesome. Even extra extra credit for something amazing animated.
-
-#### 3 Extra Credit) Go to the internet, and find a package with some cool theme you want to use in ggplot2. Use it with one of the above plots. The cooler the theme, the more points we’ll give! Note - this guy - http://byrneslab.net/project/hensel/ - is in charge of deciding how cool it is.
