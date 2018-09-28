@@ -79,7 +79,7 @@ Upper_CI
 
 ####18d. If given 25 data points I'd expect the mean to be similar- mean is a population parameter and should remain the similar while parameters that measure precision will vary with varying sample sizes. 
 
-####18e. If given 25 data points I'd expect the standard deviation to be similar as well, since it is a measurement of population, not precision, which more data points would change. 
+####18e. If given 25 data points I'd expect the standard deviation to be similar as well, since it is a measurement of spread of population, not precision, which more data points would not change. 
 
 ####18f. If given a 25 data points, I'd expect the standard error to be smaller, since it is a measure of precision 
 
